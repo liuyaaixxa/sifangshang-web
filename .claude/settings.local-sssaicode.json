@@ -1,0 +1,13 @@
+{
+   "env": {
+    "ANTHROPIC_BASE_URL": "https://claude2.sssaicode.com/api",
+    "ANTHROPIC_AUTH_TOKEN": "sk-sssaicode-f1df337c28dd86d3e3dbe8d5a167d2c733063b3c2976ac5fbeee8df16a50fc2d",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_MODEL": "claude-opus-4-6",
+    "ANTHROPIC_SMALL_FAST_MODEL": "claude-haiku-4-5-20251001",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5-20250929",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5-20251001"
+  }
+}
