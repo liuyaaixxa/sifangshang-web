@@ -39,6 +39,7 @@ yarn-error.log*
 # screenshots & temp (root level only)
 /*.png
 .playwright-mcp/
+.worktrees/
 
 # typescript
 *.tsbuildinfo
