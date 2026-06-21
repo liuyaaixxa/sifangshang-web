@@ -1,26 +1,265 @@
 @import "tailwindcss";
 
+/* ============================================
+   SIFANGSHANG — DESIGN SYSTEM
+   Three bold visual directions for an ESD brand
+   ============================================ */
+
+/* ---- Theme Tokens ---- */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-work-sans, ui-sans-serif, system-ui, sans-serif);
+  --font-mono: var(--font-ibm-plex-mono, ui-monospace, monospace);
+}
+
+/* ---- Base ---- */
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* ============================================
+   VERSION A: CIRCUIT — Dark + Electric Blue
+   Fonts: Share Tech Mono + JetBrains Mono
+   ============================================ */
+.theme-circuit {
+  --circuit-bg: #0a1628;
+  --circuit-surface: #112240;
+  --circuit-border: #1e3a5f;
+  --circuit-accent: #00b4e0;
+  --circuit-accent-dim: rgba(0, 180, 224, 0.2);
+  --circuit-text: #e8edf5;
+  --circuit-muted: #8899bb;
+  --circuit-danger: #ff3b5c;
+  --circuit-font-display: "Share Tech Mono", monospace;
+  --circuit-font-body: "JetBrains Mono", monospace;
+}
+
+/* Circuit grid overlay */
+.circuit-grid {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: center center;
+}
+
+/* Circuit trace lines */
+.circuit-trace {
+  position: relative;
+}
+.circuit-trace::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.5), transparent);
+}
+
+/* Glowing text */
+.glow-text-cyan {
+  text-shadow: 0 0 40px rgba(0, 212, 255, 0.4), 0 0 80px rgba(0, 212, 255, 0.15);
+}
+
+/* PCB pattern */
+.pcb-pattern {
+  background-image:
+    radial-gradient(circle at 15px 15px, rgba(0, 212, 255, 0.08) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 55px 35px, rgba(0, 180, 255, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 95px 15px, rgba(0, 212, 255, 0.07) 1.5px, transparent 1.5px);
+  background-size: 120px 60px;
+}
+
+/* ============================================
+   VERSION B: PRECISION — Black/White + Deep Green
+   Fonts: Cormorant Garamond + Work Sans
+   ============================================ */
+.theme-precision {
+  --prec-bg: #fafaf9;
+  --prec-surface: #ffffff;
+  --prec-border: #e7e5e4;
+  --prec-accent: #0d5c3f;
+  --prec-accent-light: rgba(13, 92, 63, 0.08);
+  --prec-text: #1c1917;
+  --prec-muted: #78716c;
+  --prec-subtle: #d6d3d1;
+  --prec-font-display: "Cormorant Garamond", serif;
+  --prec-font-body: "Work Sans", sans-serif;
+}
+
+/* Editorial rule */
+.editorial-rule {
+  width: 80px;
+  height: 1px;
+  background: #0d5c3f;
+  opacity: 0.4;
+}
+
+/* Image frame — museum/editorial style */
+.image-frame {
+  position: relative;
+}
+.image-frame::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Subtle noise texture */
+.noise-texture {
+  position: relative;
+}
+.noise-texture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================
+   VERSION C: FORGE — Brutalist + Safety Orange
+   Fonts: Bebas Neue + Space Mono
+   ============================================ */
+.theme-forge {
+  --forge-bg: #121212;
+  --forge-surface: #1a1a1a;
+  --forge-border: #2a2a2a;
+  --forge-accent: #ff5c00;
+  --forge-accent-hot: #ff7b2c;
+  --forge-text: #f0f0f0;
+  --forge-muted: #888;
+  --forge-font-display: "Bebas Neue", sans-serif;
+  --forge-font-body: "Space Mono", monospace;
+}
+
+/* Brutalist border */
+.brutal-border {
+  border: 3px solid #2a2a2a;
+}
+
+/* Diagonal clip */
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+
+.clip-diagonal-reverse {
+  clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Safety stripe pattern */
+.safety-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(255, 92, 0, 0.06) 8px,
+    rgba(255, 92, 0, 0.06) 16px
+  );
+}
+
+/* Concrete texture overlay */
+.concrete-texture {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 92, 0, 0.03) 0%, transparent 50%);
+}
+
+/* ============================================
+   SHARED ANIMATIONS
+   ============================================ */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes revealRight {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes revealLeft {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.anim-reveal-right {
+  animation: revealRight 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.anim-reveal-left {
+  animation: revealLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.anim-scale-in {
+  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* Stagger delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0d1520; }
+::-webkit-scrollbar-thumb { background: #1a2740; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a3f60; }
+
+/* ============================================
+   SELECTION
+   ============================================ */
+::selection {
+  background: rgba(0, 212, 255, 0.25);
+  color: #fff;
 }
