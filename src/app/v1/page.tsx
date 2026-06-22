@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import FloatingContact from "@/components/FloatingContact";
 
 const HERO_IMG = "https://images.unsplash.com/photo-1592659762303-90081d34b277?w=1920&q=80";
@@ -15,6 +17,7 @@ const products = [
     img: "https://images.pexels.com/photos/9574476/pexels-photo-9574476.jpeg?w=800&h=600&fit=crop",
     badge: "HOT",
     gradient: "from-slate-800/30 via-slate-900/50 to-slate-950/70",
+    href: "/products/garments",
   },
   {
     label: "防静电鞋类",
@@ -24,6 +27,7 @@ const products = [
     img: "https://images.pexels.com/photos/14982935/pexels-photo-14982935.jpeg?w=800&h=600&fit=crop",
     badge: "NEW",
     gradient: "from-slate-700/30 via-slate-800/50 to-slate-950/70",
+    href: "/products/footwear",
   },
   {
     label: "无尘口罩",
@@ -33,6 +37,7 @@ const products = [
     img: "https://images.pexels.com/photos/5040595/pexels-photo-5040595.jpeg?w=800&h=600&fit=crop",
     badge: "BEST",
     gradient: "from-sky-800/30 via-blue-900/50 to-slate-950/70",
+    href: "/products/masks",
   },
   {
     label: "ESD工作椅",
@@ -42,6 +47,7 @@ const products = [
     img: "https://images.pexels.com/photos/7897069/pexels-photo-7897069.jpeg?w=800&h=600&fit=crop",
     badge: "",
     gradient: "from-gray-700/25 via-gray-800/45 to-gray-950/65",
+    href: "/products/chairs",
   },
   {
     label: "防静电地板",
@@ -51,6 +57,7 @@ const products = [
     img: "https://images.unsplash.com/photo-1772305336606-989a457ffbae?w=800&h=600&fit=crop",
     badge: "",
     gradient: "from-stone-700/25 via-stone-800/45 to-stone-950/65",
+    href: "/products/flooring",
   },
   {
     label: "工程服务",
@@ -60,6 +67,7 @@ const products = [
     img: "https://images.unsplash.com/photo-1748002388689-c62b45d5c28b?w=800&h=600&fit=crop",
     badge: "PRO",
     gradient: "from-indigo-800/30 via-indigo-900/50 to-slate-950/70",
+    href: "/solutions/electronics",
   },
 ];
 
@@ -73,30 +81,7 @@ const stats = [
 export default function VersionACircuit() {
   return (
     <div className="theme-circuit min-h-screen" style={{ background: "var(--circuit-bg)", color: "var(--circuit-text)", fontFamily: "var(--circuit-font-body)" }}>
-      {/* ===== TOP BAR ===== */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b" style={{ borderColor: "var(--circuit-border)", background: "rgba(10,22,40,0.92)", backdropFilter: "blur(20px)" }}>
-        <nav className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16">
-          <a href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 border flex items-center justify-center" style={{ borderColor: "var(--circuit-accent)", boxShadow: "0 0 20px rgba(0,212,255,0.2)" }}>
-              <span className="text-sm tracking-widest" style={{ color: "var(--circuit-accent)", fontFamily: "var(--circuit-font-display)" }}>SF</span>
-            </div>
-            <div>
-              <div className="text-sm font-semibold tracking-[0.15em] text-white" style={{ fontFamily: "var(--circuit-font-display)" }}>思帆商</div>
-              <div className="text-[9px] tracking-[0.3em] opacity-40">SIFANGSHANG</div>
-            </div>
-          </a>
-          <div className="hidden lg:flex items-center gap-1">
-            {["产品", "方案", "工程", "关于", "联系"].map((item) => (
-              <a key={item} href={`#${item}`} className="px-4 py-2 text-xs tracking-[0.15em] opacity-60 hover:opacity-100 transition-opacity" style={{ fontFamily: "var(--circuit-font-display)" }}>
-                {item}
-              </a>
-            ))}
-          </div>
-          <a href="#contact" className="hidden lg:block px-5 py-2 text-xs tracking-[0.15em] border transition-all hover:shadow-[0_0_30px_rgba(0,212,255,0.2)]" style={{ borderColor: "var(--circuit-accent)", color: "var(--circuit-accent)", fontFamily: "var(--circuit-font-display)" }}>
-            获取报价
-          </a>
-        </nav>
-      </header>
+      <Navbar />
 
       {/* ===== HERO ===== */}
       <section className="relative min-h-screen flex items-center overflow-hidden circuit-grid pcb-pattern">
@@ -226,9 +211,10 @@ export default function VersionACircuit() {
           {/* E-commerce poster grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {products.map((p) => (
-              <div
+              <Link
                 key={p.label}
-                className="group relative overflow-hidden cursor-pointer border transition-all duration-500 hover:-translate-y-1"
+                href={p.href}
+                className="group relative overflow-hidden cursor-pointer border transition-all duration-500 hover:-translate-y-1 block"
                 style={{ borderColor: "var(--circuit-border)", minHeight: 380 }}
               >
                 {/* Product image background */}
@@ -281,7 +267,7 @@ export default function VersionACircuit() {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -7,14 +7,16 @@ export function generateStaticParams() {
   return newsArticles.map((a) => ({ slug: a.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const a = newsArticles.find((a) => a.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const a = newsArticles.find((a) => a.slug === slug);
   if (!a) return {};
   return { title: `${a.title} | 思帆商`, description: a.summary };
 }
 
-export default function NewsArticlePage({ params }: { params: { slug: string } }) {
-  const a = newsArticles.find((a) => a.slug === params.slug);
+export default async function NewsArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const a = newsArticles.find((a) => a.slug === slug);
   if (!a) notFound();
 
   return (

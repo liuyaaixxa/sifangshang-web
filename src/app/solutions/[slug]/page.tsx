@@ -7,14 +7,16 @@ export function generateStaticParams() {
   return solutions.map((s) => ({ slug: s.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const s = solutions.find((s) => s.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const s = solutions.find((s) => s.slug === slug);
   if (!s) return {};
   return { title: `${s.name}ESD解决方案 | 思帆商`, description: s.overview.slice(0, 120) };
 }
 
-export default function SolutionPage({ params }: { params: { slug: string } }) {
-  const s = solutions.find((s) => s.slug === params.slug);
+export default async function SolutionPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const s = solutions.find((s) => s.slug === slug);
   if (!s) notFound();
 
   return (
