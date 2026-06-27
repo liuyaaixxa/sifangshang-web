@@ -9,20 +9,14 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build static export
-        run: npm run build
+      - run: npm ci
+      - run: npm run build
 
       - name: Install ossutil
         run: |
@@ -30,21 +24,15 @@ jobs:
           unzip -q ossutil.zip
           sudo mv ossutil-linux-amd64/ossutil /usr/local/bin/ossutil
           chmod +x /usr/local/bin/ossutil
-          ossutil --version
 
-      - name: Configure ossutil
+      - name: Configure & Deploy
         env:
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
           OSS_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
           OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
-        run: |
-          ossutil config -e "$OSS_ENDPOINT" \
-            -i "$OSS_ACCESS_KEY_ID" \
-            -k "$OSS_ACCESS_KEY_SECRET" \
-
-      - name: Deploy to OSS
-        env:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
-          ossutil sync out/ oss://$OSS_BUCKET/ --delete --acl public-read -f
-          echo "✅ Deployed to OSS: $OSS_BUCKET"
+          ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
+          ossutil mb "oss://$OSS_BUCKET" --acl public-read 2>/dev/null || echo "Bucket may already exist"
+          ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
+          echo "✅ Deployed: http://$OSS_BUCKET.$OSS_ENDPOINT"
