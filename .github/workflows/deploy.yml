@@ -25,7 +25,7 @@ jobs:
           sudo mv ossutil-linux-amd64/ossutil /usr/local/bin/ossutil
           chmod +x /usr/local/bin/ossutil
 
-      - name: Configure & Deploy
+      - name: Deploy to OSS
         env:
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
           OSS_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
@@ -33,6 +33,14 @@ jobs:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
-          ossutil mb "oss://$OSS_BUCKET" --acl public-read 2>/dev/null || echo "Bucket may already exist"
+
+          # Create bucket if not exists
+          ossutil mb "oss://$OSS_BUCKET" --acl public-read 2>/dev/null || echo "Bucket exists"
+
+          # Enable static website hosting
+          ossutil website "oss://$OSS_BUCKET" --method put --index index.html --error 404.html 2>/dev/null || echo "Website config set"
+
+          # Upload files
           ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
+
           echo "✅ Deployed: http://$OSS_BUCKET.$OSS_ENDPOINT"
