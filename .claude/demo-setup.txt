@@ -1,0 +1,35 @@
+agens平台
+apiKey:  sk-tRfb7PyKIdGJnlmyc8IiUr1YLWj8NXAejlgpcnztDU50ia6m
+支持模型：文本模型：Agnes-2.0-Flash，，视频，图片 Agnes Image 2.1 Flash, Agnes-Video-V2.
+
+minimax平台
+apiKey: sk-cp-5upehJwoMo-HSmyA9ma1KnQv7xwY_Btgmobo-QgqVtKfp-8YYwAzcF-En1kN01DuSARJc1HNpRRv1gwmYAKiK8qoDCLlzUwMPKJRFB7TSIv_dB2UpP2OCFk
+语言模型
+模型名称            	介绍                                                        
+MiniMax-M3	原生多模态、1M 上下文的 Frontier Coding 模型
+MiniMax-M2.7	开启模型的自我迭代
+MiniMax-M2.7-highspeed	与 M2.7 效果不变，速度大幅提升
+
+视频模型
+模型名称            	介绍
+MiniMax Hailuo 2.3	全新视频生成模型，肢体动作、面部表情、物理表现与指令遵循再度突破
+MiniMax Hailuo 2.3 Fast	全新图生视频模型，物理表现与指令遵循具佳，更快更优惠
+
+语音模型
+模型名称            	介绍                                                        
+Speech-2.8-HD	新一代语音 HD 模型，情绪渲染融合语气词，重塑自然听感
+Speech-2.8-Turbo	新一代语音 Turbo 模型，极致生成速度，更自然逼真的音频效果
+
+图片模型
+模型名称           	介绍                                                        
+image-01	图像生成模型，画面表现细腻，支持文生图、图生图
+image-01-live	图像生成模型，手绘、卡通等画风增强，支持文生图并进行画风设置
+​
+音乐模型
+模型名称           	介绍                                                        
+music-2.6	以声传情：翻唱入心，器乐入魂
+music-cover	基于参考音频生成翻唱版本，支持一步翻唱和两步翻唱（可修改歌词），支持风格迁移和自动歌词提取
+
+即梦 CLI 体验指南
+curl -s https://jimeng.jianying.com/cli | bash
+https://bytedance.larkoffice.com/wiki/FVTwwm0bGiishxkKOoScdHR2nsg

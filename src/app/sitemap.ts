@@ -1,5 +1,7 @@
 import { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://sifangshang.vercel.app";
   const products = ["garments", "footwear", "masks", "chairs", "flooring"];
