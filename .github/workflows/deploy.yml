@@ -24,14 +24,27 @@ jobs:
       - name: Build static export
         run: npm run build
 
-      - name: Deploy to OSS
-        uses: manyuanrong/setup-ossutil@v3
-        with:
-          endpoint: ${{ secrets.OSS_ENDPOINT }}
-          access-key-id: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
-          access-key-secret: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
-
-      - name: Upload to OSS
+      - name: Install ossutil
         run: |
-          ossutil sync out/ oss://${{ secrets.OSS_BUCKET }}/ --delete --acl public-read -f
-          echo "Deployed to OSS: ${{ secrets.OSS_BUCKET }}"
+          curl -fsSL -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil-linux-amd64.zip
+          unzip -q ossutil.zip
+          chmod +x ossutil
+          sudo mv ossutil /usr/local/bin/
+
+      - name: Configure ossutil
+        env:
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+          OSS_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
+          OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
+        run: |
+          ossutil config -e "$OSS_ENDPOINT" \
+            -i "$OSS_ACCESS_KEY_ID" \
+            -k "$OSS_ACCESS_KEY_SECRET" \
+            --mode AK
+
+      - name: Deploy to OSS
+        env:
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+        run: |
+          ossutil sync out/ oss://$OSS_BUCKET/ --delete --acl public-read -f
+          echo "✅ Deployed to OSS bucket: $OSS_BUCKET"
