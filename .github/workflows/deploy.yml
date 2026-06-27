@@ -28,8 +28,9 @@ jobs:
         run: |
           curl -fsSL -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.18/ossutil-linux-amd64.zip
           unzip -q ossutil.zip
-          chmod +x ossutil
-          sudo mv ossutil /usr/local/bin/
+          sudo mv ossutil-linux-amd64/ossutil /usr/local/bin/ossutil
+          chmod +x /usr/local/bin/ossutil
+          ossutil --version
 
       - name: Configure ossutil
         env:
@@ -47,4 +48,4 @@ jobs:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           ossutil sync out/ oss://$OSS_BUCKET/ --delete --acl public-read -f
-          echo "✅ Deployed to OSS bucket: $OSS_BUCKET"
+          echo "✅ Deployed to OSS: $OSS_BUCKET"
