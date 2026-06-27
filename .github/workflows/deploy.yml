@@ -33,17 +33,7 @@ jobs:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
-
-          # Create bucket
-          ossutil mb "oss://$OSS_BUCKET" 2>/dev/null || echo "Bucket exists"
-
-          # Set bucket ACL
-          ossutil bucket-acl "oss://$OSS_BUCKET" --acl public-read -f 2>/dev/null || echo "ACL may need manual setting"
-
-          # Enable static website hosting
-          ossutil website "oss://$OSS_BUCKET" --method put --index index.html --error 404.html 2>/dev/null || echo "Website config may need manual setting"
-
-          # Upload files (with individual ACL)
           ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
-
-          echo "✅ Deployed: http://$OSS_BUCKET.$OSS_ENDPOINT"
+          # Set website config
+          ossutil website "oss://$OSS_BUCKET" --method put --index index.html --error 404.html
+          echo "✅ http://$OSS_BUCKET.$OSS_ENDPOINT"
