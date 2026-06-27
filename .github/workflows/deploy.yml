@@ -1,0 +1,37 @@
+name: Deploy to Alibaba Cloud OSS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static export
+        run: npm run build
+
+      - name: Deploy to OSS
+        uses: manyuanrong/setup-ossutil@v3
+        with:
+          endpoint: ${{ secrets.OSS_ENDPOINT }}
+          access-key-id: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
+
+      - name: Upload to OSS
+        run: |
+          ossutil sync out/ oss://${{ secrets.OSS_BUCKET }}/ --delete --acl public-read -f
+          echo "Deployed to OSS: ${{ secrets.OSS_BUCKET }}"
