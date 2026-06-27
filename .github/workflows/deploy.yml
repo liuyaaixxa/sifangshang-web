@@ -41,7 +41,6 @@ jobs:
           ossutil config -e "$OSS_ENDPOINT" \
             -i "$OSS_ACCESS_KEY_ID" \
             -k "$OSS_ACCESS_KEY_SECRET" \
-            --mode AK
 
       - name: Deploy to OSS
         env:
