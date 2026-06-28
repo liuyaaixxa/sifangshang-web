@@ -17,44 +17,20 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Deploy with Python oss2 SDK
+      - name: Install ossutil
+        run: |
+          curl -fsSL -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.18/ossutil-linux-amd64.zip
+          unzip -q ossutil.zip
+          sudo mv ossutil-linux-amd64/ossutil /usr/local/bin/ossutil
+          chmod +x /usr/local/bin/ossutil
+
+      - name: Deploy to OSS
         env:
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
           OSS_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
           OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
-          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
         run: |
-          pip install oss2 -q
-          python3 << 'PYEOF'
-          import oss2, os, mimetypes
-          
-          bucket_name = os.environ["OSS_BUCKET"]
-          endpoint = f"https://{os.environ['OSS_ENDPOINT']}"
-          auth = oss2.Auth(os.environ["OSS_ACCESS_KEY_ID"], os.environ["OSS_ACCESS_KEY_SECRET"])
-          bucket = oss2.Bucket(auth, endpoint, bucket_name)
-          
-          # Delete existing objects
-          for obj in oss2.ObjectIterator(bucket):
-              bucket.delete_object(obj.key)
-          print(f"Cleared all objects")
-          
-          # Upload all files from out/ directory
-          import pathlib
-          out_dir = pathlib.Path("out")
-          count = 0
-          for f in out_dir.rglob("*"):
-              if f.is_file():
-                  key = str(f.relative_to(out_dir))
-                  # Determine content type
-                  content_type = mimetypes.guess_type(str(f))[0] or "application/octet-stream"
-                  headers = {"Content-Type": content_type}
-                  bucket.put_object_from_file(key, str(f), headers=headers)
-                  count += 1
-          
-          print(f"✅ Uploaded {count} files")
-          
-          # Configure website
-          from oss2.models import BucketWebsite
-          bucket.put_bucket_website(BucketWebsite("index.html", "404.html"))
-          print("✅ Website config set")
-          PYEOF
+          ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
+          ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
+          echo "✅ http://$OSS_BUCKET.$OSS_ENDPOINT/index.html"
