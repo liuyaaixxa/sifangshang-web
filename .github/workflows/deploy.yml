@@ -33,5 +33,13 @@ jobs:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
-          ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
+          
+          # Clear Content-Disposition and force-download from all objects
+          ossutil set-meta "oss://$OSS_BUCKET/" --include "*.html" --meta "Content-Disposition:" -r -f 2>/dev/null || true
+          ossutil set-meta "oss://$OSS_BUCKET/" --include "*.js" --meta "Content-Disposition:" -r -f 2>/dev/null || true
+          ossutil set-meta "oss://$OSS_BUCKET/" --include "*.css" --meta "Content-Disposition:" -r -f 2>/dev/null || true
+          
+          # Sync files without force-download
+          ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read --meta "Content-Disposition:" -f
+          
           echo "✅ Deployed to: http://$OSS_BUCKET.$OSS_ENDPOINT"
