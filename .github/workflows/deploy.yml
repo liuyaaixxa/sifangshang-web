@@ -17,29 +17,32 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Install ossutil
-        run: |
-          curl -fsSL -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.18/ossutil-linux-amd64.zip
-          unzip -q ossutil.zip
-          sudo mv ossutil-linux-amd64/ossutil /usr/local/bin/ossutil
-          chmod +x /usr/local/bin/ossutil
-
-      - name: Deploy to OSS
+      - name: Deploy to OSS via aliyun CLI
         env:
-          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
-          OSS_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
-          OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
+          ALIBABACLOUD_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
+          ALIBABACLOUD_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
-          ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
+          # Install aliyun CLI
+          curl -fsSL -o aliyun-cli.tar.gz https://aliyuncli.alicdn.com/aliyun-cli-linux-3.4.2-amd64.tgz
+          tar xzf aliyun-cli.tar.gz
+          sudo mv aliyun /usr/local/bin/
           
-          # Debug: check ossutil version
-          ossutil --version
+          # Delete all objects 
+          aliyun oss rm "oss://$OSS_BUCKET/" -r -f 2>/dev/null || true
           
-          # Remove ALL objects first, then re-upload fresh
-          ossutil rm "oss://$OSS_BUCKET/" -r -f
+          # Create bucket if needed (with public-read)
+          aliyun oss mb "oss://$OSS_BUCKET" --acl public-read 2>/dev/null || true
           
-          # Upload fresh without any extra headers
-          ossutil cp out/ "oss://$OSS_BUCKET/" -r -f --acl public-read
+          # Upload files one by one
+          cd out
+          for f in $(find . -type f); do
+            dest="oss://$OSS_BUCKET/${f#./}"
+            aliyun oss cp "$f" "$dest" --acl public-read -f 2>/dev/null
+          done
+          cd ..
+          
+          # Set website config
+          aliyun oss website --method put "oss://$OSS_BUCKET" index.html 404.html 2>/dev/null || true
           
           echo "✅ Deployed"
