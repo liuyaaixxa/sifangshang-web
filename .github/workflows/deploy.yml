@@ -33,10 +33,13 @@ jobs:
         run: |
           ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
           
-          # First, remove Content-Disposition from ALL existing objects using set-meta with delete flag
-          ossutil set-meta "oss://$OSS_BUCKET/" --include "*" --delete --meta "Content-Disposition" -r -f 2>/dev/null || true
+          # Debug: check ossutil version
+          ossutil --version
           
-          # Re-sync with explicit metadata to prevent force-download
-          ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
+          # Remove ALL objects first, then re-upload fresh
+          ossutil rm "oss://$OSS_BUCKET/" -r -f
+          
+          # Upload fresh without any extra headers
+          ossutil cp out/ "oss://$OSS_BUCKET/" -r -f --acl public-read
           
           echo "✅ Deployed"
