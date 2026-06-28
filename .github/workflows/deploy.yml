@@ -17,32 +17,44 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Deploy to OSS via aliyun CLI
+      - name: Deploy with Python oss2 SDK
         env:
-          ALIBABACLOUD_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
-          ALIBABACLOUD_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
+          OSS_ACCESS_KEY_ID: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
+          OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
         run: |
-          # Install aliyun CLI
-          curl -fsSL -o aliyun-cli.tar.gz https://aliyuncli.alicdn.com/aliyun-cli-linux-3.4.2-amd64.tgz
-          tar xzf aliyun-cli.tar.gz
-          sudo mv aliyun /usr/local/bin/
+          pip install oss2 -q
+          python3 << 'PYEOF'
+          import oss2, os, mimetypes
           
-          # Delete all objects 
-          aliyun oss rm "oss://$OSS_BUCKET/" -r -f 2>/dev/null || true
+          bucket_name = os.environ["OSS_BUCKET"]
+          endpoint = f"https://{os.environ['OSS_ENDPOINT']}"
+          auth = oss2.Auth(os.environ["OSS_ACCESS_KEY_ID"], os.environ["OSS_ACCESS_KEY_SECRET"])
+          bucket = oss2.Bucket(auth, endpoint, bucket_name)
           
-          # Create bucket if needed (with public-read)
-          aliyun oss mb "oss://$OSS_BUCKET" --acl public-read 2>/dev/null || true
+          # Delete existing objects
+          for obj in oss2.ObjectIterator(bucket):
+              bucket.delete_object(obj.key)
+          print(f"Cleared all objects")
           
-          # Upload files one by one
-          cd out
-          for f in $(find . -type f); do
-            dest="oss://$OSS_BUCKET/${f#./}"
-            aliyun oss cp "$f" "$dest" --acl public-read -f 2>/dev/null
-          done
-          cd ..
+          # Upload all files from out/ directory
+          import pathlib
+          out_dir = pathlib.Path("out")
+          count = 0
+          for f in out_dir.rglob("*"):
+              if f.is_file():
+                  key = str(f.relative_to(out_dir))
+                  # Determine content type
+                  content_type = mimetypes.guess_type(str(f))[0] or "application/octet-stream"
+                  headers = {"Content-Type": content_type}
+                  bucket.put_object_from_file(key, str(f), headers=headers)
+                  count += 1
           
-          # Set website config
-          aliyun oss website --method put "oss://$OSS_BUCKET" index.html 404.html 2>/dev/null || true
+          print(f"✅ Uploaded {count} files")
           
-          echo "✅ Deployed"
+          # Configure website
+          from oss2.models import BucketWebsite
+          bucket.put_bucket_website(BucketWebsite("index.html", "404.html"))
+          print("✅ Website config set")
+          PYEOF
