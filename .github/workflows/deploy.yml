@@ -34,6 +34,4 @@ jobs:
         run: |
           ossutil config -e "$OSS_ENDPOINT" -i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET"
           ossutil sync out/ "oss://$OSS_BUCKET/" --delete --acl public-read -f
-          # Set website config
-          ossutil website "oss://$OSS_BUCKET" --method put --index index.html --error 404.html
-          echo "✅ http://$OSS_BUCKET.$OSS_ENDPOINT"
+          echo "✅ Deployed to: http://$OSS_BUCKET.$OSS_ENDPOINT"
